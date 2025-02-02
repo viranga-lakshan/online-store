@@ -1,23 +1,36 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   AiOutlineHome,
   AiOutlineShopping,
   AiOutlineShoppingCart,
-  AiOutlineLogin, // ✅ Fix: Import AiOutlineLogin
-  AiOutlineUserAdd, // ✅ Fix: Import AiOutlineUserAdd
+  AiOutlineLogin,
+  AiOutlineUserAdd,
 } from "react-icons/ai";
 import { FaHeart } from "react-icons/fa";
 import "./Navigation.css";
-
-// Define FavoritesCount component
-const FavoritesCount = () => {
-  const count = 5; // Replace with actual count logic
-  return <span className="px-1 py-0 text-sm text-white bg-pink-500 rounded-full">{count}</span>;
-};
+import { useSelector, useDispatch } from "react-redux";
+import { useLogoutMutation } from "../../redux/api/usersApiSlice";
+import { logout } from "../../redux/features/auth/authSlice";
 
 const Navigation = ({ cartItems = [] }) => {
+  const { userInfo } = useSelector((state) => state.auth);
   const [showSidebar, setShowSidebar] = useState(false);
+
+  const dispatch = useDispatch(); //this is used to send actions to the store
+  const navigate = useNavigate();//this is used to navigate to different pages
+
+  const [logoutApiCall] = useLogoutMutation();
+
+  const logoutHandler = async () => {
+    try {
+      await logoutApiCall().unwrap();
+      dispatch(logout());
+      navigate("/login");
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div
@@ -57,9 +70,15 @@ const Navigation = ({ cartItems = [] }) => {
           <div className="flex items-center justify-center transition-transform transform hover:translate-x-2">
             <FaHeart className="mt-[3rem] mr-2" size={20} />
             <span className="hidden nav-item-name mt-[3rem]">Favorites</span>
-            <FavoritesCount />
           </div>
         </Link>
+      </div>
+      
+      <div className="relative">
+        <button
+          onClick={logoutHandler} className="flex items-center text-gray-800 focus:outline-none">
+          {userInfo ? <span className="text-white">{userInfo.username}</span> : (<></>)}
+        </button>
       </div>
 
       <ul>
