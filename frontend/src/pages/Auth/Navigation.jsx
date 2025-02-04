@@ -1,42 +1,35 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import {
   AiOutlineHome,
   AiOutlineShopping,
-  AiOutlineShoppingCart,
   AiOutlineLogin,
   AiOutlineUserAdd,
+  AiOutlineShoppingCart,
 } from "react-icons/ai";
 import { FaHeart } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "./Navigation.css";
 import { useSelector, useDispatch } from "react-redux";
 import { useLogoutMutation } from "../../redux/api/usersApiSlice";
 import { logout } from "../../redux/features/auth/authSlice";
 import FavoritesCount from "../Products/FavoritesCount";
 
-const Navigation = ({ cartItems = [] }) => {
+const Navigation = () => {
   const { userInfo } = useSelector((state) => state.auth);
+  const { cartItems } = useSelector((state) => state.cart);
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+
+  const toggleDropdown = () => {
+    setDropdownOpen(!dropdownOpen);
+  };
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [logoutApiCall] = useLogoutMutation();
-  
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const dropdownRef = useRef();
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setDropdownOpen(false);
-      }
-    };
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
 
   const logoutHandler = async () => {
     try {
@@ -48,14 +41,12 @@ const Navigation = ({ cartItems = [] }) => {
     }
   };
 
-  const toggleDropdown = () => {
-    setDropdownOpen(!dropdownOpen);
-  };
-
   return (
     <div
       style={{ zIndex: 9999 }}
-      className={`${showSidebar ? "hidden" : "flex"} xl:flex lg:flex md:hidden sm:hidden flex-col justify-between p-4 text-white bg-[#000] w-[4%] hover:w-[15%] h-[100vh] fixed`}
+      className={`${
+        showSidebar ? "hidden" : "flex"
+      } xl:flex lg:flex md:hidden sm:hidden flex-col justify-between p-4 text-white bg-[#000] w-[4%] hover:w-[15%] h-[100vh]  fixed `}
       id="navigation-container"
     >
       <div className="flex flex-col justify-center space-y-4">
@@ -64,32 +55,40 @@ const Navigation = ({ cartItems = [] }) => {
           className="flex items-center transition-transform transform hover:translate-x-2"
         >
           <AiOutlineHome className="mr-2 mt-[3rem]" size={26} />
-          <span className="hidden nav-item-name mt-[3rem]">HOME</span>
+          <span className="hidden nav-item-name mt-[3rem]">HOME</span>{" "}
         </Link>
+
         <Link
           to="/shop"
           className="flex items-center transition-transform transform hover:translate-x-2"
         >
           <AiOutlineShopping className="mr-2 mt-[3rem]" size={26} />
-          <span className="hidden nav-item-name mt-[3rem]">SHOP</span>
+          <span className="hidden nav-item-name mt-[3rem]">SHOP</span>{" "}
         </Link>
+
         <Link to="/cart" className="relative flex">
           <div className="flex items-center transition-transform transform hover:translate-x-2">
             <AiOutlineShoppingCart className="mt-[3rem] mr-2" size={26} />
-            <span className="hidden nav-item-name mt-[3rem]">Cart</span>
+            <span className="hidden nav-item-name mt-[3rem]">Cart</span>{" "}
           </div>
+
           <div className="absolute top-9">
             {cartItems.length > 0 && (
-              <span className="px-1 py-0 text-sm text-white bg-pink-500 rounded-full">
-                {cartItems.reduce((a, c) => a + c.qty, 0)}
+              <span>
+                <span className="px-1 py-0 text-sm text-white bg-pink-500 rounded-full">
+                  {cartItems.reduce((a, c) => a + c.qty, 0)}
+                </span>
               </span>
             )}
           </div>
         </Link>
+
         <Link to="/favorite" className="relative flex">
           <div className="flex items-center justify-center transition-transform transform hover:translate-x-2">
             <FaHeart className="mt-[3rem] mr-2" size={20} />
-            <span className="hidden nav-item-name mt-[3rem]">Favorites</span>
+            <span className="hidden nav-item-name mt-[3rem]">
+              Favorites
+            </span>{" "}
             <FavoritesCount />
           </div>
         </Link>
@@ -99,13 +98,18 @@ const Navigation = ({ cartItems = [] }) => {
         <button
           onClick={toggleDropdown}
           className="flex items-center text-gray-800 focus:outline-none"
-          ref={dropdownRef}
         >
-          {userInfo ? <span className="text-white">{userInfo.username}</span> : null}
+          {userInfo ? (
+            <span className="text-white">{userInfo.username}</span>
+          ) : (
+            <></>
+          )}
           {userInfo && (
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className={`h-4 w-4 ml-1 ${dropdownOpen ? "transform rotate-180" : ""}`}
+              className={`h-4 w-4 ml-1 ${
+                dropdownOpen ? "transform rotate-180" : ""
+              }`}
               fill="none"
               viewBox="0 0 24 24"
               stroke="white"
@@ -119,6 +123,7 @@ const Navigation = ({ cartItems = [] }) => {
             </svg>
           )}
         </button>
+
         {dropdownOpen && userInfo && (
           <ul
             className={`absolute right-0 mt-2 mr-14 space-y-2 bg-white text-gray-600 ${
