@@ -4,7 +4,7 @@ import Loader from "../components/Loader";
 import Message from "../components/Message";
  
 import Header from "../components/Header";
-import Product from "./Products/Products";
+import Product from "./Products/Product";
 
 const Home = () => {
   const { keyword } = useParams();
