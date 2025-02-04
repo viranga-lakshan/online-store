@@ -7,7 +7,6 @@ import cartSliceReducer from "../redux/features/cart/cartSlice";
 import shopReducer from "../redux/features/shop/shopSlice";
 import { getFavoritesFromLocalStorage } from "../Utils/localStorage";
 
-// Define initialFavorites
 const initialFavorites = getFavoritesFromLocalStorage() || [];
 
 const store = configureStore({
@@ -18,9 +17,11 @@ const store = configureStore({
     cart: cartSliceReducer,
     shop: shopReducer,
   },
+
   preloadedState: {
     favorites: initialFavorites,
   },
+
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(apiSlice.middleware),
   devTools: true,
