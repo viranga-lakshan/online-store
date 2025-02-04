@@ -87,6 +87,18 @@ const Order = () => {
     refetch();
   };
 
+  const handleMockPayment = async () => {
+    // Simulate a successful payment
+    try {
+      // Here you would normally call your backend to save the order
+      await payOrder({ orderId, details: { status: "COMPLETED" } });
+      refetch();
+      toast.success("Order is paid");
+    } catch (error) {
+      toast.error(error?.data?.message || error.message);
+    }
+  };
+
   return isLoading ? (
     <Loader />
   ) : error ? (
@@ -222,6 +234,10 @@ const Order = () => {
             </button>
           </div>
         )}
+
+        <button onClick={handleMockPayment} className="bg-pink-500 text-white py-2 px-4 rounded">
+          Simulate PayPal Payment
+        </button>
       </div>
     </div>
   );
